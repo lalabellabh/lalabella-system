@@ -1,4 +1,4 @@
-name: Bootstrap from Lalabella Production
+name: Bootstrap from Lalabella System Migration
 
 on:
   push:
@@ -15,20 +15,20 @@ jobs:
       - name: Checkout development repository
         uses: actions/checkout@v4
 
-      - name: Copy stable production source
+      - name: Copy previously cloned migration baseline
         run: |
-          rm -rf production-source
-          git clone --depth 1 --branch main https://github.com/lalabellabh/lalabella-calculator.git production-source
-          find . -mindepth 1 -maxdepth 1 ! -name .git ! -name production-source -exec rm -rf {} +
-          cp -a production-source/. .
-          rm -rf production-source
+          rm -rf migration-source
+          git clone --depth 1 --branch lalabella-system-supabase https://github.com/lalabellabh/lalabella-calculator.git migration-source
+          find . -mindepth 1 -maxdepth 1 ! -name .git ! -name migration-source -exec rm -rf {} +
+          cp -a migration-source/. .
+          rm -rf migration-source
           rm -f .github/workflows/bootstrap-from-production.yml
 
-      - name: Commit stable baseline
+      - name: Commit migration baseline
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
           git diff --cached --quiet && exit 0
-          git commit -m "chore: bootstrap development repo from stable main"
+          git commit -m "chore: bootstrap from verified Supabase migration baseline"
           git push origin HEAD:main
