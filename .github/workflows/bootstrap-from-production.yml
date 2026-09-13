@@ -19,6 +19,7 @@ jobs:
         run: |
           rm -rf migration-source
           git clone --depth 1 --branch lalabella-system-supabase https://github.com/lalabellabh/lalabella-calculator.git migration-source
+          rm -rf migration-source/.git
           find . -mindepth 1 -maxdepth 1 ! -name .git ! -name migration-source -exec rm -rf {} +
           cp -a migration-source/. .
           rm -rf migration-source
