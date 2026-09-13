@@ -18,24 +18,6 @@
         if(!profile && !publicPages.has(here)){location.replace(login);return;}
         window.LALABELLA_USER=user;
         window.LALABELLA_PROFILE=profile||null;
-        // NOVA legacy-page compatibility: any historical Apps Script URL is
-        // intercepted locally and routed to the authenticated Supabase Edge API.
-        if(here==='nova-command-center.html'){
-          const originalFetch=window.fetch.bind(window);
-          window.fetch=async function(input,init){
-            const url=typeof input==='string'?input:(input&&input.url)||'';
-            if(/script\.google\.com\/macros\/s\//.test(url)){
-              const sessionResult=await window.LalabellaAuth.getSession();
-              const accessToken=sessionResult?.data?.session?.access_token;
-              if(!accessToken) throw new Error('Supabase session expired. Please log in again.');
-              let body={};try{body=typeof init?.body==='string'?JSON.parse(init.body||'{}'):{};}catch(e){}
-              let parsed={};try{parsed=new URL(url);}catch(e){}
-              const endpoint=window.LALABELLA_SUPABASE.url+'/functions/v1/nova-api';
-              return originalFetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+accessToken},body:JSON.stringify({message:body.message||parsed.searchParams?.get('message')||'',session:body.session||{},context:body.context||{page:'NOVA Command Center',app:'Flower Tools'}}),signal:init?.signal});
-            }
-            return originalFetch(input,init);
-          };
-        }
       }
       document.documentElement.style.visibility='';
     }catch(e){
