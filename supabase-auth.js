@@ -1,7 +1,10 @@
 /* Lalabella Supabase Auth adapter. No legacy Apps Script auth. */
 (function(){
   'use strict';
-  async function client(){return window.LalabellaSupabase.client();}
+  async function client(){
+    if(!window.LalabellaSupabase) throw new Error('Supabase client adapter is unavailable');
+    return window.LalabellaSupabase.ready();
+  }
   const api={
     async signIn(email,password){const supabase=await client();return supabase.auth.signInWithPassword({email,password});},
     async signOut(){const supabase=await client();return supabase.auth.signOut();},
@@ -11,6 +14,5 @@
     async onAuthStateChange(callback){const supabase=await client();return supabase.auth.onAuthStateChange(callback);}
   };
   window.LalabellaAuth=Object.freeze(api);
-  // Compatibility alias used by migrated pages.
   window.sbAuth=window.LalabellaAuth;
 })();
